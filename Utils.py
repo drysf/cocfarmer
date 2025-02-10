@@ -61,7 +61,7 @@ class Utils:
 
         try:
             # Prendre une capture d'écran d'une zone spécifique
-            screenshot = ImageGrab.grab(bbox=(100, 128, 240, 191))  # Ajustez les coordonnées ici
+            screenshot = ImageGrab.grab(bbox=(90, 118, 250, 201))  # Ajustez les coordonnées ici
             screenshot.save(image_path)  # Sauvegarder l'image dans le dossier "atk"
             screenshot.close()
             print(f"Capture d'écran sauvegardée dans : {image_path}")
@@ -80,7 +80,7 @@ class Utils:
             print(f"Nombres extraits : {numbers}")
 
             # Vérifier si un nombre dépasse 1 000 000
-            if any(num > 600_000 for num in numbers):
+            if any(num > 900_000 for num in numbers):
                 return True
             else:
                 return False
@@ -91,7 +91,9 @@ class Utils:
         
         finally:
             # Supprimer l'image après analyse
-            self.deleteImage(image_path)
+            # self.deleteImage(image_path)
+            pass
+            
     
 
 
@@ -116,15 +118,16 @@ class Utils:
         Réalise une série d'actions pour une attaque.
         """
         attacked = False
-
         self.dezoom()
-
         time.sleep(random.uniform(0.3, 0.9))
 
-        pyautogui.click(120, 682)  # Clic sur le bouton "attaquer"
-        # Attendre 0.1 à 0.6 secondes pour simuler un clic humain
+        x, y = self.generateRandomCoord(maxH=700, minH=610, maxW=170, minW=70)
+        pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
+
         time.sleep(random.uniform(0.1, 0.6))
-        pyautogui.click(967, 415)  # Clic sur le bouton "attaquer"
+
+        x, y = self.generateRandomCoord(maxH=500, minH=430, maxW=1000, minW=850)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
 
 
         while attacked is False:
@@ -147,7 +150,9 @@ class Utils:
                 self.dropTroop()
 
                 time.sleep(random.uniform(190, 200))
-                pyautogui.click(666, 546)  # Clic sur le bouton "suivant"
+                print("on rentre a la baraque")
+                x, y = self.generateRandomCoord(maxH=650, minH=610, maxW=736, minW=589)
+                pyautogui.click(x=x, y=y)  # Clic sur le bouton "attaquer"
             else:
                 print("pas de ressources suffisantes pour attaquer")
 
@@ -164,7 +169,6 @@ class Utils:
         Les 2 dernières catégories utilisent des coordonnées spécifiques pour la zone de dépôt.
         """
         try:
-            # Limites des zones de clic pour les troupes (x, y)
             troop_bounds = [
                 (130, 200, 650, 720),  # Troupe 1 (minW, maxW, minH, maxH)
                 (225, 300, 650, 720),  # Troupe 2
@@ -187,40 +191,34 @@ class Utils:
             for troop_index, bounds in enumerate(troop_bounds):
                 # Générer des coordonnées aléatoires pour la troupe
                 troop_x, troop_y = self.generateRandomCoord(bounds[3], bounds[2], bounds[1], bounds[0])
-                print(f"Coordonnées générées pour la troupe {troop_index + 1} : x = {troop_x}, y = {troop_y}")
 
-                # Définir les coordonnées de dépôt (par défaut ou spéciales)
                 if troop_index >= 7:  # Utiliser les coordonnées spéciales pour les 2 dernières catégories
-                    drop_x, drop_y = self.generateRandomCoord(
+
+
+                    pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
+                    time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
+                    for i in range(10):
+                        drop_x, drop_y = self.generateRandomCoord(
                         special_drop_bounds[3], special_drop_bounds[2],
                         special_drop_bounds[1], special_drop_bounds[0]
                     )
-                    print(f"Coordonnées spéciales générées pour la zone de dépôt de la troupe {troop_index + 1} : ({drop_x}, {drop_y})")
+                        time.sleep(random.uniform(0, 0.1))  # Pause pour simuler un délai humain=
+                        pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
+
                 else:  # Utiliser les coordonnées par défaut pour les autres catégories
-                    drop_x, drop_y = self.generateRandomCoord(
+
+                    pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
+                    time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
+                    for i in range(10):
+                        drop_x, drop_y = self.generateRandomCoord(
                         drop_bounds[3], drop_bounds[2],
                         drop_bounds[1], drop_bounds[0]
                     )
-                    print(f"Coordonnées générées pour la zone de dépôt : ({drop_x}, {drop_y})")
+                        time.sleep(random.uniform(0, 0.1))  # Pause pour simuler un délai humain=
+                        pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
 
-                # if troop_index < 2:  # Drag-and-drop pour les 2 premières catégories
-                #     print(f"Drag-and-drop pour la troupe {troop_index + 1}.")
-                #     pyautogui.moveTo(troop_x, troop_y, duration=random.uniform(0.5, 1.0))  # Déplacer sur la troupe
-                #     time.sleep(random.uniform(0.5, 1.0))  # Pause pour garantir un maintien prolongé
-                #     pyautogui.moveTo(drop_x, drop_y, duration=random.uniform(1.0, 1.5))  # Déplacer vers la zone de dépôt
-                #     time.sleep(random.uniform(1.5, 1.7))  # Pause supplémentaire si nécessaire
-                #     pyautogui.mouseDown()  # Maintenir la souris
-                #     time.sleep(random.uniform(2.5, 3.0))  # Pause pour simuler un délai humain
-                #     pyautogui.mouseUp()  # Relâcher la souris
-                #     print(f"Troupe {troop_index + 1} déposée avec succès.")
-
-                print(f"Clic pour la troupe {troop_index + 1}.")
-                pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
-                time.sleep(random.uniform(0.2, 0.5))  # Pause pour simuler un délai humain
-                for i in range(10):
-                    pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
-
-                # Pause avant de passer à la catégorie suivante
+                if troop_index >= 3 and troop_index <= 6:
+                    pyautogui.click(troop_x, troop_y)  # actriver la capa sur la troupe
                 time.sleep(random.uniform(0.5, 1.0))
 
             print("Toutes les troupes ont été posées avec succès.")
@@ -255,12 +253,26 @@ class Utils:
         Forme des troupes en appuyant sur la cabane et en naviguant dans le
         menu.
         """
-        # Exemple de clics pour la formation
-        pyautogui.click(300, 300)  # Clic sur la cabane
-        time.sleep(1)
-        pyautogui.click(350, 350)  # Clic sur l'onglet "former"
-        time.sleep(1)
-        pyautogui.click(400, 400)  # Clic sur "former"
+        x, y = self.generateRandomCoord(maxH=450, minH=440, maxW=1040, minW=1030)
+        pyautogui.click(x, y)  # Clic sur la cabane
+        time.sleep(random.uniform(0.3, 0.5))
+
+        x, y = self.generateRandomCoord(maxH=620, minH=540, maxW=850, minW=750)
+        pyautogui.click(x, y)  # Clic sur l'onglet "former"
+        time.sleep(random.uniform(0.3, 0.5))
+
+        x, y = self.generateRandomCoord(maxH=100, minH=70, maxW=1100, minW=950)
+        pyautogui.click(x, y)  # Clic sur "formation rapide"
+
+        time.sleep(random.uniform(0.3, 0.5))
+        x, y = self.generateRandomCoord(maxH=380, minH=350, maxW=1150, minW=1060)
+        pyautogui.click(x, y)  # Clic sur "former"
+
+        time.sleep(random.uniform(0.3, 0.5))
+        x, y = self.generateRandomCoord(maxH=90, minH=70, maxW=1180, minW=1150)
+        pyautogui.click(x, y)  # Clic sur "la croix rouge"
+        time.sleep(random.uniform(0.3, 0.5))
+        print("Troupes formées avec succès je declare pas mes impots MOUAHAHAHAHAHAHAAHHAHAHAHAHAHHAHAHAHAHAHAHAHAHAH.")
 
     def generateRandomCoord(self, maxH, minH, maxW, minW):
         """
