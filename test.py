@@ -1,9 +1,27 @@
-import pyautogui
+from Utils import Utils
+import easyocr
 
 
-while True: 
-    #afficher les coordonnées de la souris
-    print(pyautogui.position())
+test = Utils()
 
-    #afficher la couleur du pixel sous la souris
-    # print(pyautogui.pixel(pyautogui.position()[0], pyautogui.position()[1]))
+
+# def main():
+#     test.upgrade('elixir', (161, 226, 255))
+
+def main():
+    reader = easyocr.Reader(['en'])
+    result = reader.readtext('build/elixir_amount_screen.png')
+    print(result)
+
+    #afficher juste le texte
+
+
+
+    for (bbox, text, prob) in result:
+        print(text)
+
+
+
+
+if __name__ == '__main__':
+    main()

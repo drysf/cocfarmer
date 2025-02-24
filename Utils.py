@@ -6,7 +6,9 @@ import time
 import pyautogui
 import mouse
 import os
-from PIL import ImageGrab
+from PIL import Image, ImageGrab, ImageEnhance, ImageFilter, ImageOps
+import easyocr
+
 
 
 class Utils:
@@ -14,6 +16,7 @@ class Utils:
     def __init__(self):
         # Initialisation du chemin pour pytesseract si nécessaire
         pytesseract.pytesseract.tesseract_cmd = r'C:\D\tesseract\tesseract.exe'
+        self.reader = easyocr.Reader(['en'])
 
 
     def incrementor(self):
@@ -44,43 +47,51 @@ class Utils:
             return 1
 
   
+
+
     def takePictureAttack(self):
         """
         Prend une capture d'écran d'une certaine zone, analyse le texte
         et retourne True si le texte contient un chiffre
         supérieur à 1 000 000, sinon retourne False.
-        et ensuite il baize ta mere bien comme il faut
         """
-        # Définir le chemin pour sauvegarder l'image
         folder_path = "atk"
-        image_name = "attack_screen.png"
-        image_path = os.path.join(folder_path, image_name)
 
-        # S'assurer que le dossier existe
-        os.makedirs(folder_path, exist_ok=True)
+        elixir_image_name = "elixir_attack_screen.png"
+        elixir_image_path = os.path.join(folder_path, elixir_image_name)
+
+        gold_image_name = "gold_attack_screen.png"
+        gold_image_path = os.path.join(folder_path, gold_image_name)
 
         try:
-            # Prendre une capture d'écran d'une zone spécifique
-            screenshot = ImageGrab.grab(bbox=(90, 118, 250, 201))  # Ajustez les coordonnées ici
-            screenshot.save(image_path)  # Sauvegarder l'image dans le dossier "atk"
+            # ELIXIR
+            screenshot = ImageGrab.grab(bbox=(100, 160, 230, 201))  # Ajustez les coordonnées ici
+            screenshot.save(elixir_image_path)
             screenshot.close()
-            print(f"Capture d'écran sauvegardée dans : {image_path}")
+            result = self.reader.readtext(elixir_image_path)
 
-            # Charger l'image et extraire le texte
-            img = Image.open(image_path)
-            text = pytesseract.image_to_string(img)
-            print(f"Texte trouvé : {text}")
+            elixir = "0"
+            for (bbox, text, prob) in result:
+                elixir = text.replace(" ", "").replace(",", "").replace(".", "")  # Supprimer espaces et séparateurs
 
-            # Nettoyer et extraire les nombres
-            cleaned_text = text.replace(",", "").replace(".", "").replace(" ", "")  # Retirer les séparateurs potentiels
-            print(f"Texte nettoyé : {cleaned_text}")
+            # GOLD
+            screenshot = ImageGrab.grab(bbox=(100, 128, 230, 160))  # Ajustez les coordonnées ici
+            screenshot.save(gold_image_path)
+            screenshot.close()
+            result = self.reader.readtext(gold_image_path)
 
-            # Rechercher les nombres valides
-            numbers = [int(num) for num in cleaned_text.split() if num.isdigit()]
-            print(f"Nombres extraits : {numbers}")
+            gold = "0"
+            for (bbox, text, prob) in result:
+                gold = text.replace(" ", "").replace(",", "").replace(".", "")  # Même traitement
+
+            # Conversion en int
+            elixir = int(elixir) if elixir.isdigit() else 0
+            gold = int(gold) if gold.isdigit() else 0
+
+            numbers = elixir + gold
 
             # Vérifier si un nombre dépasse 1 000 000
-            if any(num > 900_000 for num in numbers):
+            if 2_500_000 < numbers < 4_500_000:
                 return True
             else:
                 return False
@@ -88,11 +99,7 @@ class Utils:
         except Exception as e:
             print(f"Erreur lors de la capture ou de l'analyse de l'image : {e}")
             return False
-        
-        finally:
-            # Supprimer l'image après analyse
-            # self.deleteImage(image_path)
-            pass
+
             
     
 
@@ -134,12 +141,7 @@ class Utils:
 
             time.sleep(random.uniform(4.3, 5.9))
 
-            self.takePictureAttack()
 
-            time.sleep(random.uniform(1.3, 1.9))
-            # Si le texte contient un nombre supérieur à 1 000 000
-            # alors l'attaque a été
-            # lancée avec succès
             if self.takePictureAttack():
                 attacked = True
                 self.dezoom()
@@ -197,7 +199,7 @@ class Utils:
 
                     pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
                     time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(10):
+                    for i in range(11):
                         drop_x, drop_y = self.generateRandomCoord(
                         special_drop_bounds[3], special_drop_bounds[2],
                         special_drop_bounds[1], special_drop_bounds[0]
@@ -209,7 +211,7 @@ class Utils:
 
                     pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
                     time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(10):
+                    for i in range(11):
                         drop_x, drop_y = self.generateRandomCoord(
                         drop_bounds[3], drop_bounds[2],
                         drop_bounds[1], drop_bounds[0]
@@ -253,11 +255,10 @@ class Utils:
         Forme des troupes en appuyant sur la cabane et en naviguant dans le
         menu.
         """
-        x, y = self.generateRandomCoord(maxH=450, minH=440, maxW=1040, minW=1030)
-        pyautogui.click(x, y)  # Clic sur la cabane
+        pyautogui.click(1022, 471)  # Clic sur la cabane
         time.sleep(random.uniform(0.3, 0.5))
 
-        x, y = self.generateRandomCoord(maxH=620, minH=540, maxW=850, minW=750)
+        x, y = self.generateRandomCoord(maxH=620, minH=540, maxW=750, minW=700)
         pyautogui.click(x, y)  # Clic sur l'onglet "former"
         time.sleep(random.uniform(0.3, 0.5))
 
@@ -337,3 +338,127 @@ class Utils:
                 print(f"L'image n'existe pas : {image_path}")
         except Exception as e:
             print(f"Erreur lors de la suppression de l'image : {e}")
+            
+
+
+
+    def preprocess_image(self, image_path):
+        """ Améliore l'image pour l'OCR """
+        img = Image.open(image_path)
+
+        # Convertir l'image en niveaux de gris
+        img = img.convert("L")
+        
+        # Appliquer un filtre de médiane pour réduire le bruit
+        img = img.filter(ImageFilter.MedianFilter(size=3))
+
+        # Appliquer une binarisation pour augmenter le contraste
+        img = ImageOps.autocontrast(img, cutoff=2)
+        
+        # Améliorer le contraste de l'image
+        enhancer = ImageEnhance.Contrast(img)
+        img = enhancer.enhance(2)  # Augmenter le contraste pour les textes clairs
+        
+        # Appliquer un filtre de netteté pour rendre les bords plus distincts
+        img = img.filter(ImageFilter.SHARPEN)
+        
+        # Optionnel : Appliquer un ajustement de la luminosité si nécessaire
+        # enhancer = ImageEnhance.Brightness(img)
+        # img = enhancer.enhance(1.2)  # Augmenter légèrement la luminosité
+
+        # Sauvegarder l'image traitée (optionnel si tu veux remplacer le fichier d'origine)
+        img.save(image_path)
+        
+        return img
+    def getAmountUpgrade(self, amount):
+        """
+        Prend une capture d'écran d'une certaine zone, analyse le texte
+        et retourne "elixir" ou "gold" si le montant est supérieur au paramètre.
+        Sinon retourne False.
+        """
+        folder_path = "build"
+        image_elixir = "elixir_amount_screen.png"
+        image_path_elixir = os.path.join(folder_path, image_elixir)
+
+        image_gold = "gold_amount_screen.png"
+        image_path_gold = os.path.join(folder_path, image_gold)
+
+        os.makedirs(folder_path, exist_ok=True)  # S'assurer que le dossier existe
+
+        try:
+            # Capture Elixir
+            screenshot_elixir = ImageGrab.grab(bbox=(1100, 129, 1215, 152))
+            screenshot_elixir.save(image_path_elixir)
+            screenshot_elixir.close()
+
+            # Prétraitement de l'image
+            img = image_path_elixir
+            elixir = self.reader.readtext('build/elixir_amount_screen.png')
+            for (bbox, text, prob) in elixir:
+                elixir = text.replace(" ", "").replace(",", "").replace(".", "")  # Même traitement
+
+
+            # Capture Gold
+            screenshot_gold = ImageGrab.grab(bbox=(1100, 64, 1215, 87))
+            screenshot_gold.save(image_path_gold)
+            screenshot_gold.close()
+
+            # Prétraitement de l'image
+            img = image_path_gold
+            gold = self.reader.readtext('build/gold_amount_screen.png')
+            for (bbox, text, prob) in gold:
+                gold = text.replace(" ", "").replace(",", "").replace(".", "")  # Même traitement
+
+            elixir = int(elixir) if elixir.isdigit() else 0
+            gold = int(gold) if gold.isdigit() else 0
+            
+            # Comparaison avec amount
+            if elixir > amount and elixir < 15000000:
+                return "elixir"
+            if gold > amount and gold < 15000000:
+                return "gold"
+            return False
+
+        except Exception as e:
+            print(f"Erreur lors de la capture ou de l'analyse de l'image : {e}")
+            return False
+
+
+
+
+    def upgrade(self, ressource, rgb):
+        """
+        Cherche un pixel de la couleur donnée sur l'écran et clique dessus.
+        
+        :param rgb: Tuple (R, G, B) représentant la couleur à rechercher.
+        :return: True si un clic a été effectué, False sinon.
+        """
+        screenshot = pyautogui.screenshot()
+        width, height = screenshot.size
+
+        for x in range(width):
+            for y in range(height):
+                if screenshot.getpixel((x, y)) == rgb:
+                    pyautogui.click(x, y)
+
+                    if ressource == "elixir":
+                        print("Amélioration avec l'élixir lancée.")
+                        x, y = self.generateRandomCoord(maxH=600, minH=540, maxW=920, minW=820)
+                    elif ressource == "gold":
+                        print("Amélioration avec l'or lancée.")
+                        x, y = self.generateRandomCoord(maxH=600, minH=540, maxW=780, minW=700)
+                    else :
+                        print("la ressource n'est pas valide")
+
+                    pyautogui.click(x, y)  # Clic sur "améliorer"
+                    time.sleep(random.uniform(0.5, 1.0))
+                    x, y = self.generateRandomCoord(maxH=670, minH=620, maxW=970, minW=840)
+                    time.sleep(random.uniform(0.5, 1.0))
+                    pyautogui.click(x, y)
+
+                    print("Amélioration terminée.")
+                    return True
+        
+        return False  # Aucun pixel trouvé avec cette couleur
+
+
