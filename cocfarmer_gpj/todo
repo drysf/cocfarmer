@@ -1,0 +1,86 @@
+le faire dans un venv
+faire un requirement.txt
+pour commencer faire les attaques en continue
+que ca fonctionne avec l'écran scindé
+
+ouvrir une image :
+image = Image.open('image.png')
+
+analyser le texte d'une image :
+text = pytesseract.image_to_string(image)
+
+prendre une capture et la save  :
+from PIL import ImageGrab
+# Capture the entire screen
+screenshot = ImageGrab.grab()
+# Save the screenshot to a file
+screenshot.save("screenshot.png")
+# Close the screenshot
+screenshot.close()
+
+prendre une capture d'une certaine zone :
+screenshot = ImageGrab.grab(bbox=(100, 100, 500, 500))
+
+faire un click en fonction des coordonnées :
+from pymouse import PyMouse
+m = PyMouse()
+m.position() #gets mouse current position coordinates
+m.move(x,y)
+m.click(x,y) #the third argument "1" represents the mouse button
+m.press(x,y) #mouse button press
+m.release(x,y) #mouse button release
+
+avoir la couleur du pixel :
+import pyautogui
+while True:
+    x, y = pyautogui.position()
+    px = pyautogui.pixel(x, y)
+    print(px)
+
+un meilleur module pour simuler la souris :
+https://www.tutorialspoint.com/how-to-simulate-mouse-movements-using-python
+avantages : temp de mouvement, mouse wheel et fonction préfaite
+
+étape du main
+je lance une attaque
+je screen et verifie si il y'a plus de 2000000
+si oui je lance attack sinon je lance passAttack
+le tout dans une boucle
+si je lance attack alors j'attend la fin en random
+quand c'est finis je vérifie combien de ressources j'ai avec un screen
+si j'ai assez alors je lance rempart
+je lance formTroop
+j'attend que ca se finisse et je relance
+
+
+1366
+
+768
+
+
+
+162 225 255
+
+
+nik les balances qui parlent en scred 
+
+nik lurssaf 
+
+nik les shmit
+
+ines jla marie a la mairie 
+**
+
+
+faire le dezzom aleatoire 
+
+
+les problemes pour l'anticheat :
+
+quand je genere des coordonnees c'est toujours les memes si je pose 10 troops c'est dérangeant
+
+le dezzom n'est pas aleatoire je drag and drop sur la meme zone a chaque fois pareil pour le premier click 
+
+generer les cooredonnees a chaque fois que je pose une troupe ensuite changer les coord pour les sorts et faire pareil 
+fonction de l'index de la troop
+
