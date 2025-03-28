@@ -40,12 +40,6 @@ def main():
             x, y = farmer.generateRandomCoord(minH=130, maxH=180, minW=900, maxW=950)
             pyautogui.click(x, y)
 
-# print(rgb)
-# rgb = (42, 46, 63)
-
-# def main():
-#     farmer = Utils.Utils()
-#     print(farmer.upgrade(rgb=rgb, ressource="elixir"))
 
     
 

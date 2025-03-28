@@ -6,7 +6,7 @@ test = Utils()
 
 
 def main():
-    test.upgrade('gold', (190, 245, 254))
+    test.upgrade('elixir', (56, 77, 78))
 
 # def main():
 #     test.formTroop()

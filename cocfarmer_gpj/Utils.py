@@ -18,34 +18,6 @@ class Utils:
         pytesseract.pytesseract.tesseract_cmd = r'C:\D\tesseract\tesseract.exe'
         self.reader = easyocr.Reader(['en'])
 
-
-    def incrementor(self):
-        """
-        Cette fonction incrémente une valeur stockée dans un fichier JSON.
-        """
-        file_name = "const.json"
-        try:
-            # Charger le fichier JSON
-            with open(file_name, "r") as file:
-                data = json.load(file)
-
-            # Incrémenter la valeur
-            value = data.get("value", 0) + 1
-            data["value"] = value
-
-            # Enregistrer la nouvelle valeur
-            with open(file_name, "w") as file:
-                json.dump(data, file, indent=4)
-
-            return value
-
-        except FileNotFoundError:
-            # Si le fichier n'existe pas, le créer avec une valeur initiale
-            data = {"value": 1}
-            with open(file_name, "w") as file:
-                json.dump(data, file, indent=4)
-            return 1
-
   
 
 
@@ -55,7 +27,11 @@ class Utils:
         et retourne True si le texte contient un chiffre
         supérieur à 1 000 000, sinon retourne False.
         """
-        folder_path = "atk"
+        folder_path = "cocfarmer_gpj/atk"
+
+        # Vérifier si le dossier existe, sinon le créer
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
 
         elixir_image_name = "elixir_attack_screen.png"
         elixir_image_path = os.path.join(folder_path, elixir_image_name)
@@ -65,7 +41,7 @@ class Utils:
 
         try:
             # ELIXIR
-            screenshot = ImageGrab.grab(bbox=(100, 139, 220, 161))  # Ajustez les coordonnées ici
+            screenshot = ImageGrab.grab(bbox=(60, 120, 160, 145))  # Ajustez les coordonnées ici
             screenshot.save(elixir_image_path)
             screenshot.close()
             result = self.reader.readtext(elixir_image_path)
@@ -76,7 +52,7 @@ class Utils:
                 print(elixir)
 
             # GOLD
-            screenshot = ImageGrab.grab(bbox=(110, 110, 220, 142))  # Ajustez les coordonnées ici
+            screenshot = ImageGrab.grab(bbox=(60, 85, 160, 110))  # Ajustez les coordonnées ici
             screenshot.save(gold_image_path)
             screenshot.close()
             result = self.reader.readtext(gold_image_path)
@@ -93,8 +69,7 @@ class Utils:
             numbers = elixir + gold
             print("total",numbers)
 
-            # Vérifier si un nombre dépasse 1 000 000
-            if 2_500_000 < numbers < 4_500_000:
+            if 2_000_000 < numbers < 5_000_000:
                 return True
             else:
                 return False
@@ -110,14 +85,11 @@ class Utils:
         Réalise une série d'actions pour une attaque.
         """
         attacked = False
-        self.dezoom()
         time.sleep(random.uniform(0.3, 0.9))
 
-        x, y = self.generateRandomCoord(maxH=700, minH=640, maxW=150, minW=90)
+        x, y = self.generateRandomCoord(maxH=700, minH=660, maxW=110, minW=90)
         pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
-
         time.sleep(random.uniform(0.1, 0.6))
-
         x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
         pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
 
@@ -137,14 +109,13 @@ class Utils:
                 self.dropTroop()
 
                 time.sleep(random.uniform(190, 200))
-                print("on rentre a la baraque")
-                x, y = self.generateRandomCoord(maxH=650, minH=620, maxW=736, minW=620)
+                x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
                 pyautogui.click(x=x, y=y)  # Clic sur le bouton "attaquer"
             else:
                 print("pas de ressources suffisantes pour attaquer")
 
                 # Réessayer l'attaque
-                x, y = self.generateRandomCoord(maxH=575, minH=550, maxW=1270, minW=1150)
+                x, y = self.generateRandomCoord(maxH=575, minH=550, maxW=1270, minW=1200)
                 time.sleep(random.uniform(0.4, 0.6))
                 pyautogui.click(x=x, y=y)  # Clic sur le bouton "suivant"
                 continue
@@ -157,22 +128,22 @@ class Utils:
         """
         try:
             troop_bounds = [
-                (250, 300, 650, 700),  # Troupe 1 (minW, maxW, minH, maxH)
-                (330, 380, 650, 700),  # Troupe 2
-                (420, 460, 650, 700),  # Troupe 3
-                (500, 550, 650, 700),  # Troupe 4
-                (580, 630, 650, 700),  # Troupe 5
-                (660, 700, 650, 700),  # Troupe 6
-                (750, 790, 650, 700),  # Troupe 7
-                (830, 880, 650, 700),  # Troupe 8
-                (900, 950, 650, 700),  # Troupe 9
+                (210, 250, 670, 740),  # Troupe 1 (minW, maxW, minH, maxH)
+                (290, 340, 670, 740),  # Troupe 2
+                (390, 440, 670, 740),  # Troupe 3
+                (490, 540, 670, 740),  # Troupe 4
+                (590, 630, 670, 740),  # Troupe 5
+                (690, 710, 670, 740),  # Troupe 6
+                (750, 790, 670, 740),  # Troupe 7
+                (840, 890, 670, 740),  # Troupe 8
+                (930, 980, 670, 740),  # Troupe 9
             ]
 
             # Limites pour la zone de dépôt par défaut (x, y)
             drop_bounds = (528, 555, 135, 140)  # (minW, maxW, minH, maxH)
 
             # Limites spéciales pour la zone de dépôt des 2 dernières catégories (x, y)
-            special_drop_bounds = (420, 640, 400, 550)  # (minW, maxW, minH, maxH)
+            special_drop_bounds = (528, 555, 135, 140)  # (minW, maxW, minH, maxH)
 
             # Parcourir toutes les catégories de troupes
             for troop_index, bounds in enumerate(troop_bounds):
@@ -215,30 +186,6 @@ class Utils:
 
 
 
-    def formTroop(self):
-        """
-        Forme des troupes en appuyant sur la cabane et en naviguant dans le
-        menu.
-        """
-        pyautogui.click(995, 510)  # Clic sur la cabane
-        time.sleep(random.uniform(0.3, 0.5))
-
-        x, y = self.generateRandomCoord(maxH=620, minH=570, maxW=750, minW=710)
-        pyautogui.click(x, y)  # Clic sur l'onglet "former"
-        time.sleep(random.uniform(0.3, 0.5))
-
-        x, y = self.generateRandomCoord(maxH=130, minH=110, maxW=1050, minW=950)
-        pyautogui.click(x, y)  # Clic sur "formation rapide"
-
-        time.sleep(random.uniform(0.3, 0.5))
-        x, y = self.generateRandomCoord(maxH=380, minH=350, maxW=1090, minW=1030)
-        pyautogui.click(x, y)  # Clic sur "former"
-
-        time.sleep(random.uniform(0.3, 0.5))
-        x, y = self.generateRandomCoord(maxH=130, minH=110, maxW=1120, minW=1100)
-        pyautogui.click(x, y)  # Clic sur "la croix rouge"
-        time.sleep(random.uniform(0.3, 0.5))
-        print("Troupes formées avec succès je declare pas mes impots MOUAHAHAHAHAHAHAAHHAHAHAHAHAHHAHAHAHAHAHAHAHAHAH.")
 
     def generateRandomCoord(self, maxH, minH, maxW, minW):
         """
@@ -254,39 +201,22 @@ class Utils:
         Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
         """
         try:
-            # Maintenir la touche Ctrl pour dézoomer correctement
-
-            pyautogui.click(70, 340)
-
-            time.sleep(1)  # Pause avant de commencer le dézoom
-            print("Maintien de la touche Ctrl...")
+            pyautogui.click(13, 345)
+            time.sleep(1)  
             pyautogui.keyDown('ctrl')
-            time.sleep(1.5)  # Petite pause pour garantir que la touche Ctrl est bien enfoncée
+            time.sleep(1.5) 
+            pyautogui.scroll(-500)  
+            pyautogui.keyUp('ctrl')  
+            time.sleep(3)  
 
-            # Défilement pour dézoomer
-            print("Défilement pour dézoomer...")
-            pyautogui.scroll(-500)  # Scroll vers le bas pour dézoomer
-            time.sleep(1.5)  # Attendre un peu avant de relâcher la touche Ctrl
+            start_x, start_y = 700, 150  
+            end_x, end_y = 0, 700       
 
-            print("Relâchement de la touche Ctrl...")
-            pyautogui.keyUp('ctrl')  # Relâcher la touche Ctrl
-
-            # Vérification si le dézoom a eu lieu
-            time.sleep(3)  # Pause pour voir si le dézoom a eu un effet
-
-            # Drag and drop vers le bas
-            start_x, start_y = 700, 150  # Point de départ
-            end_x, end_y = 0, 700       # Point d'arrivée
-
-            print("Début du drag-and-drop...")
-            pyautogui.moveTo(start_x, start_y)  # Positionner la souris
-            pyautogui.mouseDown()               # Maintenir le clic
-            time.sleep(0.2)  # Attente avant de commencer le glisser
-            pyautogui.dragTo(end_x, end_y, duration=0.5)  # Glisser
-            pyautogui.mouseUp()                 # Relâcher le clic
-
-            print("Opération de dézoom et drag-and-drop terminée.")
-
+            pyautogui.moveTo(start_x, start_y)  
+            pyautogui.mouseDown()             
+            time.sleep(0.2)  
+            pyautogui.dragTo(end_x, end_y, duration=0.5)  
+            pyautogui.mouseUp()                 
         except Exception as e:
             print(f"Erreur lors de l'exécution de la fonction dezoom : {e}")
 
@@ -298,7 +228,7 @@ class Utils:
         et retourne "elixir" ou "gold" si le montant est supérieur au paramètre.
         Sinon retourne False.
         """
-        folder_path = "build"
+        folder_path = "cocfarmer_gpj/build"
         image_elixir = "elixir_amount_screen.png"
         image_path_elixir = os.path.join(folder_path, image_elixir)
 
@@ -309,25 +239,25 @@ class Utils:
 
         try:
             # Capture Elixir
-            screenshot_elixir = ImageGrab.grab(bbox=(1120, 107, 1243, 131))
+            screenshot_elixir = ImageGrab.grab(bbox=(1170, 83, 1300, 109))
             screenshot_elixir.save(image_path_elixir)
             screenshot_elixir.close()
 
             # Prétraitement de l'image
             img = image_path_elixir
-            elixir = self.reader.readtext('build/elixir_amount_screen.png')
+            elixir = self.reader.readtext('cocfarmer_gpj/build/elixir_amount_screen.png')
             for (bbox, text, prob) in elixir:
                 elixir = text.replace(" ", "").replace(",", "").replace(".", "")  # Même traitement
 
 
             # Capture Gold
-            screenshot_gold = ImageGrab.grab(bbox=(1120, 54, 1240, 75))
+            screenshot_gold = ImageGrab.grab(bbox=(1170, 21, 1300, 50))
             screenshot_gold.save(image_path_gold)
             screenshot_gold.close()
 
             # Prétraitement de l'image
             img = image_path_gold
-            gold = self.reader.readtext('build/gold_amount_screen.png')
+            gold = self.reader.readtext('cocfarmer_gpj/build/gold_amount_screen.png')
             for (bbox, text, prob) in gold:
                 gold = text.replace(" ", "").replace(",", "").replace(".", "")  # Même traitement
 
@@ -335,9 +265,9 @@ class Utils:
             gold = int(gold) if gold.isdigit() else 0
             
             # Comparaison avec amount
-            if elixir > amount and elixir < 15000000:
+            if elixir > 15000000:
                 return "elixir"
-            if gold > amount and gold < 15000000:
+            if gold > 15000000:
                 return "gold"
             return False
 
@@ -350,25 +280,33 @@ class Utils:
 
     def upgrade(self, ressource, rgb):
         """
-        Cherche un pixel de la couleur donnée sur l'écran et clique dessus.
+        Cherche un pixel de la couleur donnée dans une zone spécifique et clique dessus.
 
         :param ressource: Type de ressource ("elixir" ou "gold").
         :param rgb: Tuple (R, G, B) représentant la couleur à rechercher.
         :return: True si un clic a été effectué, False sinon.
         """
         print("Recherche de la couleur...")
-        screenshot = pyautogui.screenshot()
-        width, height = screenshot.size
+
+        # Définition de la zone à scanner (X=500, Y=300, Largeur=400, Hauteur=200)
+        x_start, y_start, width, height = 468, 93, 913, 419  
+
+        screenshot = pyautogui.screenshot(region=(x_start, y_start, width, height))  # Capture uniquement la zone définie
         time.sleep(random.uniform(0.5, 1.0))
 
         for x in range(width):
             for y in range(height):
                 if self.couleur_proche(screenshot.getpixel((x, y)), rgb, tolerance=1):  
-                    print(f"Clic détecté en ({x}, {y}) pour la couleur {rgb}")
-                    pyautogui.click(x, y)
-                    time.sleep(random.uniform(2.5, 3.0))
+                    abs_x, abs_y = x_start + x, y_start + y  # Convertit en coordonnées globales
+                    print(f"Clic détecté en ({abs_x}, {abs_y}) pour la couleur {rgb}")
                     
+                    pyautogui.click(abs_x, abs_y)
+                    time.sleep(random.uniform(2.5, 3.0))
+
                     return self.process_upgrade(ressource)  # Exécuter l'amélioration et arrêter la recherche
+
+        print("Aucun pixel trouvé avec cette couleur.")
+        return False  # Aucun pixel trouvé
 
         print("Aucun pixel trouvé avec cette couleur")
         return False  # Aucun pixel trouvé avec cette couleur
@@ -386,10 +324,10 @@ class Utils:
         """
         if ressource == "elixir":
             print("Amélioration avec l'élixir lancée.")
-            x, y = self.generateRandomCoord(maxH=610, minH=570, maxW=860, minW=810)
+            x, y = self.generateRandomCoord(maxH=610, minH=580, maxW=860, minW=810)
         elif ressource == "gold":
             print("Amélioration avec l'or lancée.")
-            x, y = self.generateRandomCoord(maxH=610, minH=570, maxW=760, minW=700)
+            x, y = self.generateRandomCoord(maxH=610, minH=580, maxW=760, minW=700)
         else:
             print("La ressource n'est pas valide")
             return False
@@ -400,7 +338,7 @@ class Utils:
         time.sleep(random.uniform(1.5, 2.0))
         print("Amélioration en cours...")
 
-        x, y = self.generateRandomCoord(maxH=670, minH=620, maxW=970, minW=840)
+        x, y = self.generateRandomCoord(maxH=670, minH=640, maxW=970, minW=900)
         time.sleep(random.uniform(1.5, 2.0))
         pyautogui.click(x, y)  # Clic sur "confirmer"
 
