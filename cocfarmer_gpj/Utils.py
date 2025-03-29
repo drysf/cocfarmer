@@ -78,6 +78,28 @@ class Utils:
             print(f"Erreur lors de la capture ou de l'analyse de l'image : {e}")
             return False
 
+
+    def check_and_click_pixel(self):
+        """
+        Vérifie si le pixel aux coordonnées (x, y) correspond à target_rgb.
+        Si oui, clique dessus et retourne True. Répète toutes les 5 secondes.
+        """
+        try:
+            while True:
+                # Capturer la couleur du pixel
+                x = 678
+                y = 679
+                target_rgb = (108, 187, 31)
+                current_color = pyautogui.pixel(x, y)
+                
+                if current_color == target_rgb:
+                    return True
+                
+                print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
+                time.sleep(5)
+        except KeyboardInterrupt:
+            print("Interruption de la fonction.")
+            return False
             
 
     def attack(self):
@@ -107,10 +129,9 @@ class Utils:
                 print("Attaque trouvée !")
 
                 self.dropTroop()
-
-                time.sleep(random.uniform(190, 200))
-                x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
-                pyautogui.click(x=x, y=y)  # Clic sur le bouton "attaquer"
+                if self.check_and_click_pixel():
+                    x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
+                    pyautogui.click(x=x, y=y)  
             else:
                 print("pas de ressources suffisantes pour attaquer")
 
