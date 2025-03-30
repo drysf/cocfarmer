@@ -6,8 +6,8 @@ import json
 import build
 
 
-amount = build.rempart15["cost"]
-rgb = build.rempart15["rgb"]
+amount = build.rempart16["cost"]
+rgb = build.rempart16["rgb"]
 
 
 

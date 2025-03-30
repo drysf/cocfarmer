@@ -109,7 +109,7 @@ class Utils:
         attacked = False
         time.sleep(random.uniform(0.3, 0.9))
 
-        x, y = self.generateRandomCoord(maxH=700, minH=660, maxW=110, minW=90)
+        x, y = self.generateRandomCoord(maxH=700, minH=680, maxW=110, minW=90)
         pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
         time.sleep(random.uniform(0.1, 0.6))
         x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
