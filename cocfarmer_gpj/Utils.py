@@ -1,4 +1,3 @@
-import pytesseract
 from PIL import Image
 import json
 import random
@@ -9,13 +8,21 @@ import os
 from PIL import Image, ImageGrab, ImageEnhance, ImageFilter, ImageOps
 import easyocr
 
+# Fix pour la compatibilité Pillow
+try:
+    # Pour les versions récentes de Pillow
+    from PIL import Image
+    if not hasattr(Image, 'ANTIALIAS'):
+        Image.ANTIALIAS = Image.LANCZOS
+except ImportError:
+    pass
+
 
 
 class Utils:
 
     def __init__(self):
         # Initialisation du chemin pour pytesseract si nécessaire
-        pytesseract.pytesseract.tesseract_cmd = r'C:\D\tesseract\tesseract.exe'
         self.reader = easyocr.Reader(['en'])
 
   
@@ -109,7 +116,7 @@ class Utils:
         attacked = False
         time.sleep(random.uniform(0.3, 0.9))
 
-        x, y = self.generateRandomCoord(maxH=700, minH=680, maxW=110, minW=90)
+        x, y = self.generateRandomCoord(maxH=700, minH=690, maxW=110, minW=90)
         pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
         time.sleep(random.uniform(0.1, 0.6))
         x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
@@ -286,9 +293,9 @@ class Utils:
             gold = int(gold) if gold.isdigit() else 0
             
             # Comparaison avec amount
-            if elixir > 15000000:
+            if elixir > 21_000_000 and elixir < 35_000_000:
                 return "elixir"
-            if gold > 15000000:
+            if gold > 21_000_000 and gold < 35_000_000:
                 return "gold"
             return False
 
@@ -365,3 +372,111 @@ class Utils:
 
         print("Amélioration terminée.")
         return True
+
+    def get_trophys(self):
+        """
+        Prend une capture d'écran d'une certaine zone, analyse le texte
+        et retourne le nombre de trophées.
+        """
+        folder_path = "cocfarmer_gpj/trophies"
+        image_name = "trophies_screen.png"
+        image_path = os.path.join(folder_path, image_name)
+
+        os.makedirs(folder_path, exist_ok=True)
+        # Vérifier si le dossier existe, sinon le créer
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+        
+        try:
+            # Capture d'écran de la zone des trophées
+            screenshot = ImageGrab.grab(bbox=(82, 96, 145, 119))  # Ajustez les coordonnées ici
+            screenshot.save(image_path)
+            screenshot.close()
+
+            # Analyse de l'image avec easyocr
+            result = self.reader.readtext(image_path)
+
+            trophies = "0"
+            for (bbox, text, prob) in result:
+                trophies = text.replace(" ", "").replace(",", "").replace(".", "")  # Supprimer espaces et séparateurs
+                print(trophies)
+
+            # Conversion en int
+            trophies = int(trophies) if trophies.isdigit() else 0
+
+            return trophies
+
+        except Exception as e:
+            print(f"Erreur lors de la capture ou de l'analyse de l'image : {e}")
+            return 0
+        
+    def lose_trophys(self):
+        """
+        fais une attaque et pose une troupe puis appuie sur capituler et rentrer pour perdre des trophées
+        """
+        attacked = False
+        time.sleep(random.uniform(4.3, 4.9))
+
+        x, y = self.generateRandomCoord(maxH=700, minH=680, maxW=110, minW=90)
+        pyautogui.click(x, y)
+        time.sleep(random.uniform(4.1, 4.6))
+        x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
+        pyautogui.click(x, y)
+        time.sleep(random.uniform(7.1, 8.6))
+        x, y = self.generateRandomCoord(maxH=700, minH=680, maxW=240, minW=210)
+        pyautogui.click(x, y)
+        self.dezoom()
+        time.sleep(random.uniform(4.1, 4.6))
+        x, y = self.generateRandomCoord(maxH=110, minH=101, maxW=563, minW=562)
+        pyautogui.click(x, y)
+        time.sleep(random.uniform(4.1, 4.6))
+        x, y = self.generateRandomCoord(maxH=620, minH=600, maxW=110, minW=90)
+        pyautogui.click(x, y)
+        time.sleep(random.uniform(4.1, 4.6))
+        x, y = self.generateRandomCoord(maxH=500, minH=450, maxW=800, minW=750)
+        pyautogui.click(x, y)
+        time.sleep(random.uniform(4.1, 4.6))
+        if self.check_and_click_pixel():
+            x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
+            pyautogui.click(x=x, y=y)  
+
+
+
+    def spam(self):
+        """
+        Réalise une série d'actions pour une attaque.
+        """
+        attacked = False
+        time.sleep(random.uniform(0.3, 0.9))
+
+        x, y = self.generateRandomCoord(maxH=700, minH=680, maxW=110, minW=90)
+        pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
+        time.sleep(random.uniform(0.1, 0.6))
+        x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+
+        while attacked is False:
+
+            time.sleep(random.uniform(4.3, 5.9))
+
+
+            if self.takePictureAttack():
+                attacked = True
+                self.dezoom()
+
+                time.sleep(random.uniform(0.4, 0.6))
+                print("Attaque trouvée !")
+
+                self.dropTroop()
+                if self.check_and_click_pixel():
+                    x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
+                    pyautogui.click(x=x, y=y)  
+            else:
+                print("pas de ressources suffisantes pour attaquer")
+
+                # Réessayer l'attaque
+                x, y = self.generateRandomCoord(maxH=575, minH=550, maxW=1270, minW=1200)
+                time.sleep(random.uniform(0.4, 0.6))
+                pyautogui.click(x=x, y=y)  # Clic sur le bouton "suivant"
+                continue
