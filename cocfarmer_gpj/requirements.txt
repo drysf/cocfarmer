@@ -1,0 +1,4 @@
+pyautogui==0.9.54
+Pillow==10.4.0
+easyocr==1.7.1
+mouse==0.7.1

@@ -8,21 +8,14 @@ import os
 from PIL import Image, ImageGrab, ImageEnhance, ImageFilter, ImageOps
 import easyocr
 
-# Fix pour la compatibilité Pillow
-try:
-    # Pour les versions récentes de Pillow
-    from PIL import Image
-    if not hasattr(Image, 'ANTIALIAS'):
-        Image.ANTIALIAS = Image.LANCZOS
-except ImportError:
-    pass
+import conf 
+
 
 
 
 class Utils:
 
     def __init__(self):
-        # Initialisation du chemin pour pytesseract si nécessaire
         self.reader = easyocr.Reader(['en'])
 
   
@@ -36,7 +29,6 @@ class Utils:
         """
         folder_path = "cocfarmer_gpj/atk"
 
-        # Vérifier si le dossier existe, sinon le créer
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
@@ -48,7 +40,7 @@ class Utils:
 
         try:
             # ELIXIR
-            screenshot = ImageGrab.grab(bbox=(60, 120, 160, 145))  # Ajustez les coordonnées ici
+            screenshot = ImageGrab.grab(bbox=(60, 120, 160, 145)) 
             screenshot.save(elixir_image_path)
             screenshot.close()
             result = self.reader.readtext(elixir_image_path)
@@ -76,7 +68,7 @@ class Utils:
             numbers = elixir + gold
             print("total",numbers)
 
-            if 2_000_000 < numbers < 5_000_000:
+            if conf.seuil_attaque < numbers < 5_000_000:
                 return True
             else:
                 return False
@@ -93,7 +85,6 @@ class Utils:
         """
         try:
             while True:
-                # Capturer la couleur du pixel
                 x = 678
                 y = 679
                 target_rgb = (108, 187, 31)
@@ -114,12 +105,16 @@ class Utils:
         Réalise une série d'actions pour une attaque.
         """
         attacked = False
-        time.sleep(random.uniform(0.3, 0.9))
+        time.sleep(random.uniform(1.3, 1.9))
 
         x, y = self.generateRandomCoord(maxH=700, minH=690, maxW=110, minW=90)
         pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
-        time.sleep(random.uniform(0.1, 0.6))
-        x, y = self.generateRandomCoord(maxH=470, minH=430, maxW=1000, minW=900)
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=550, minH=500, maxW=200, minW=100)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=660, minH=650, maxW=1200, minW=1050)
         pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
 
 
@@ -183,7 +178,7 @@ class Utils:
 
                     pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
                     time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(11):
+                    for i in range(16):
                         drop_x, drop_y = self.generateRandomCoord(
                         special_drop_bounds[3], special_drop_bounds[2],
                         special_drop_bounds[1], special_drop_bounds[0]
@@ -195,7 +190,7 @@ class Utils:
 
                     pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
                     time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(11):
+                    for i in range(16):
                         drop_x, drop_y = self.generateRandomCoord(
                         drop_bounds[3], drop_bounds[2],
                         drop_bounds[1], drop_bounds[0]
@@ -480,3 +475,68 @@ class Utils:
                 time.sleep(random.uniform(0.4, 0.6))
                 pyautogui.click(x=x, y=y)  # Clic sur le bouton "suivant"
                 continue
+
+
+    def attack_spam(self):
+        """
+        Réalise une série d'actions pour une attaque.
+        """
+        time.sleep(random.uniform(0.3, 0.9))
+
+        x, y = self.generateRandomCoord(maxH=700, minH=690, maxW=110, minW=90)
+        pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=550, minH=500, maxW=200, minW=100)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=660, minH=650, maxW=1200, minW=1050)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+        time.sleep(random.uniform(4.3, 5.9))
+
+
+        self.dezoom()
+
+        time.sleep(random.uniform(2.4, 2.6))
+        print("Attaque trouvée !")
+
+        self.dropTroop()
+        if self.check_and_click_pixel():
+            x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
+            pyautogui.click(x=x, y=y)  
+
+    def attack_ranked(self):
+        """
+        Réalise une série d'actions pour une attaque en classé.
+        """
+        time.sleep(random.uniform(0.3, 0.9))
+
+        x, y = self.generateRandomCoord(maxH=700, minH=690, maxW=110, minW=90)
+        pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=550, minH=500, maxW=600, minW=450)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=660, minH=650, maxW=1200, minW=1050)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+
+        x, y = self.generateRandomCoord(maxH=500, minH=460, maxW=800, minW=750)
+        pyautogui.click(x, y)  # Clic sur le bouton "Confirmer attaquer"
+
+
+        time.sleep(random.uniform(4.3, 5.9))
+
+
+        self.dezoom()
+
+        time.sleep(random.uniform(2.4, 2.6))
+        print("Attaque trouvée !")
+
+        self.dropTroop()
+        if self.check_and_click_pixel():
+            x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
+            pyautogui.click(x=x, y=y)  

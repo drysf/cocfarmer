@@ -2,24 +2,16 @@ import Utils
 import pyautogui
 import random
 import time
-
+import json
 
 
 def main():
     farmer = Utils.Utils()
     time.sleep(random.uniform(3.1, 3.3))
-    for i in range(300): 
+    while True: 
 
-        if farmer.get_trophys() >= 4900:
-            farmer.lose_trophys()
-            
-        else :
-            farmer.attack()
-            time.sleep(random.uniform(3, 4))
-
-
-
-
+        farmer.attack_spam()
+        time.sleep(random.uniform(3, 4))
 
 
 
