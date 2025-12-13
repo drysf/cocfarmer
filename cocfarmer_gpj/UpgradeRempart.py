@@ -6,15 +6,15 @@ import json
 import build
 
 
-amount = build.rempart15["cost"]
-rgb = build.rempart15["rgb"]
+amount = build.rempart18["cost"]
+rgb = build.rempart18["rgb"]
 
 
 
 def main():
     farmer = Utils.Utils()
     time.sleep(random.uniform(3.1, 3.3))
-    for i in range(300): 
+    for i in range(2000): 
 
         farmer.attack()
         time.sleep(random.uniform(3, 4))

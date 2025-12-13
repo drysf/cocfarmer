@@ -154,51 +154,35 @@ class Utils:
                 (210, 250, 670, 740),  # Troupe 1 (minW, maxW, minH, maxH)
                 (290, 340, 670, 740),  # Troupe 2
                 (390, 440, 670, 740),  # Troupe 3
-                (490, 540, 670, 740),  # Troupe 4
+                (490, 500, 670, 740),  # Troupe 4
                 (590, 630, 670, 740),  # Troupe 5
                 (690, 710, 670, 740),  # Troupe 6
                 (750, 790, 670, 740),  # Troupe 7
                 (840, 890, 670, 740),  # Troupe 8
                 (930, 980, 670, 740),  # Troupe 9
+                (1020, 1070, 670, 740),  # Troupe 10
             ]
 
             # Limites pour la zone de dépôt par défaut (x, y)
             drop_bounds = (528, 555, 135, 140)  # (minW, maxW, minH, maxH)
-
-            # Limites spéciales pour la zone de dépôt des 2 dernières catégories (x, y)
-            special_drop_bounds = (528, 555, 135, 140)  # (minW, maxW, minH, maxH)
 
             # Parcourir toutes les catégories de troupes
             for troop_index, bounds in enumerate(troop_bounds):
                 # Générer des coordonnées aléatoires pour la troupe
                 troop_x, troop_y = self.generateRandomCoord(bounds[3], bounds[2], bounds[1], bounds[0])
 
-                if troop_index >= 7:  # Utiliser les coordonnées spéciales pour les 2 dernières catégories
 
+                pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
+                time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
+                for i in range(16):
+                    drop_x, drop_y = self.generateRandomCoord(
+                    drop_bounds[3], drop_bounds[2],
+                    drop_bounds[1], drop_bounds[0]
+                )
+                    time.sleep(random.uniform(0, 0.1))  # Pause pour simuler un délai humain=
+                    pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
 
-                    pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
-                    time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(16):
-                        drop_x, drop_y = self.generateRandomCoord(
-                        special_drop_bounds[3], special_drop_bounds[2],
-                        special_drop_bounds[1], special_drop_bounds[0]
-                    )
-                        time.sleep(random.uniform(0, 0.1))  # Pause pour simuler un délai humain=
-                        pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
-
-                else:  # Utiliser les coordonnées par défaut pour les autres catégories
-
-                    pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
-                    time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
-                    for i in range(16):
-                        drop_x, drop_y = self.generateRandomCoord(
-                        drop_bounds[3], drop_bounds[2],
-                        drop_bounds[1], drop_bounds[0]
-                    )
-                        time.sleep(random.uniform(0, 0.1))  # Pause pour simuler un délai humain=
-                        pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
-
-                if troop_index >= 3 and troop_index <= 6:
+                if troop_index >= 5 and troop_index <= 8:
                     pyautogui.click(troop_x, troop_y)  # actriver la capa sur la troupe
                 time.sleep(random.uniform(0.5, 1.0))
 
@@ -228,7 +212,7 @@ class Utils:
             time.sleep(1)  
             pyautogui.keyDown('ctrl')
             time.sleep(1.5) 
-            pyautogui.scroll(-500)  
+            pyautogui.scroll(-1300)  
             pyautogui.keyUp('ctrl')  
             time.sleep(3)  
 
@@ -540,3 +524,145 @@ class Utils:
         if self.check_and_click_pixel():
             x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
             pyautogui.click(x=x, y=y)  
+
+
+    def dezoom_bottom(self):
+        """
+        Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
+        """
+        try:
+            pyautogui.click(13, 345)
+            time.sleep(1)  
+            pyautogui.keyDown('ctrl')
+            time.sleep(1.5) 
+            pyautogui.scroll(-500)  
+            pyautogui.keyUp('ctrl')  
+            time.sleep(3)  
+
+            start_x, start_y = 0, 700  
+            end_x, end_y = 700, 150       
+
+            pyautogui.moveTo(start_x, start_y)  
+            pyautogui.mouseDown()             
+            time.sleep(0.2)  
+            pyautogui.dragTo(end_x, end_y, duration=0.5)  
+            pyautogui.mouseUp()                 
+        except Exception as e:
+            print(f"Erreur lors de l'exécution de la fonction dezoom : {e}")
+
+
+    def switch_mdo(self):
+        x, y = self.generateRandomCoord(maxH=535, minH=515, maxW=390, minW=350)
+        pyautogui.click(x, y)  # Clic sur le bateau
+
+
+    def attack_mdo(self):
+        """
+        Réalise une série d'actions pour une attaque en mdo.
+        """
+        time.sleep(random.uniform(0.3, 0.9))
+
+        x, y = self.generateRandomCoord(maxH=700, minH=690, maxW=110, minW=90)
+        pyautogui.click(x, y)  # Clic sur le bouton "attaquer"
+        time.sleep(random.uniform(1.1, 1.6))
+        x, y = self.generateRandomCoord(maxH=530, minH=470, maxW=1100, minW=900)
+        pyautogui.click(x, y)  # Clic sur le bouton "trouver une partie"
+
+
+        time.sleep(random.uniform(4.3, 5.9))
+
+        self.dezoom()
+        time.sleep(random.uniform(2.4, 2.6))
+        self.dropTroop_mdo()
+
+
+    def dropTroop_mdo(self):
+
+        pyautogui.keyDown('ctrl')
+        time.sleep(1.5) 
+        for i in range(5):
+            pyautogui.scroll(-500)  
+            time.sleep(0.5)
+        pyautogui.keyUp('ctrl')  
+
+        time.sleep(random.uniform(1.9, 2.5)) 
+        try:
+            troop_bounds = [
+                (210, 250, 670, 740),  # Troupe 1 (minW, maxW, minH, maxH)
+                (300, 340, 670, 740),  # Troupe 2
+                (390, 440, 670, 740),  # Troupe 3
+                (490, 540, 670, 740),  # Troupe 4
+                (590, 630, 670, 740),  # Troupe 5
+                (690, 710, 670, 740),  # Troupe 6
+                (750, 790, 670, 740),  # Troupe 7
+                (840, 890, 670, 740),  # Troupe 8
+                (930, 980, 670, 740),  # Troupe 9
+            ]
+
+            # Limites pour la zone de dépôt par défaut (x, y)
+            drop_bounds = (630, 640, 215, 230)  # (minW, maxW, minH, maxH)
+
+
+            # Parcourir toutes les catégories de troupes
+            for troop_index, bounds in enumerate(troop_bounds):
+                # Générer des coordonnées aléatoires pour la troupe
+                troop_x, troop_y = self.generateRandomCoord(bounds[3], bounds[2], bounds[1], bounds[0])
+
+
+                pyautogui.click(troop_x, troop_y)  # Cliquer sur la troupe
+                time.sleep(random.uniform(0.2, 0.3))  # Pause pour simuler un délai humain
+                for i in range(2):
+                    drop_x, drop_y = self.generateRandomCoord(drop_bounds[3], drop_bounds[2],drop_bounds[1], drop_bounds[0])
+                    time.sleep(random.uniform(0, 0.1))
+                    pyautogui.click(drop_x, drop_y)  # Cliquer pour poser la troupe
+
+                pyautogui.click(troop_x, troop_y) 
+
+
+        except Exception as e:
+            print(f"Erreur lors du dépôt des troupes : {e}")
+
+    def check_and_click_pixel_mdo(self):
+        """
+        Vérifie si le pixel aux coordonnées (x, y) correspond à target_rgb.
+        Si oui, clique dessus et retourne True. Répète toutes les 5 secondes.
+        """
+        try:
+            while True:
+                x = 682
+                y = 662
+                target_rgb = (139, 212, 58)
+                current_color = pyautogui.pixel(x, y)
+                
+                if current_color == target_rgb:
+                    return True
+                
+                print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
+                time.sleep(5)
+        except KeyboardInterrupt:
+            print("Interruption de la fonction.")
+            return False
+        
+
+    def dezoom_mdo(self):
+        """
+        Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
+        """
+        try:
+            time.sleep(random.uniform(0.1, 0.3))  
+            pyautogui.keyDown('ctrl')
+            time.sleep(random.uniform(1.3, 1.7)) 
+            pyautogui.scroll(-1300)  
+            pyautogui.keyUp('ctrl')  
+            time.sleep(random.uniform(2.5, 3.0))  
+
+            start_x, start_y = 700, 150  
+            end_x, end_y = 0, 700       
+
+            pyautogui.moveTo(start_x, start_y)  
+            pyautogui.mouseDown()             
+            time.sleep(0.2)  
+            pyautogui.dragTo(end_x, end_y, duration=0.5)  
+            pyautogui.mouseUp()                 
+        except Exception as e:
+            print(f"Erreur lors de l'exécution de la fonction dezoom : {e}")

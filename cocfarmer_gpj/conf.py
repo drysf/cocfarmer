@@ -1,5 +1,5 @@
 # A partir de quelle valeur on attaque (elixir + or)
-seuil_attaque = 2_000_000
+seuil_attaque = 0
 
 # Quel remparts je veux améliorer (le niveau)
 niveau_rempart = 15
