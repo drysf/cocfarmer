@@ -2,7 +2,7 @@
 # pREVOIR UNE MARGE DE 200 000 POUR LES ATTAQUES
 
 rempart14 = {
-    "rgb" : (190, 245, 254),
+    "rgb" : (99, 136, 185),
     "cost" : 5000000
 }
 
