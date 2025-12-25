@@ -272,9 +272,9 @@ class Utils:
             gold = int(gold) if gold.isdigit() else 0
             
             # Comparaison avec amount
-            if elixir > 21_000_000 and elixir < 35_000_000:
+            if elixir > conf.seuil_upgrade_rempart and elixir < 35_000_000:
                 return "elixir"
-            if gold > 21_000_000 and gold < 35_000_000:
+            if gold > conf.seuil_upgrade_rempart and gold < 35_000_000:
                 return "gold"
             return False
 
@@ -295,7 +295,6 @@ class Utils:
         """
         print("Recherche de la couleur...")
 
-        # Définition de la zone à scanner (X=500, Y=300, Largeur=400, Hauteur=200)
         x_start, y_start, width, height = 468, 93, 913, 419  
 
         screenshot = pyautogui.screenshot(region=(x_start, y_start, width, height))  # Capture uniquement la zone définie
@@ -525,7 +524,6 @@ class Utils:
             x, y = self.generateRandomCoord(maxH=650, minH=630, maxW=736, minW=620)
             pyautogui.click(x=x, y=y)  
 
-
     def dezoom_bottom(self):
         """
         Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
@@ -649,12 +647,9 @@ class Utils:
         Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
         """
         try:
-            time.sleep(random.uniform(0.1, 0.3))  
-            pyautogui.keyDown('ctrl')
-            time.sleep(random.uniform(1.3, 1.7)) 
-            pyautogui.scroll(-1300)  
-            pyautogui.keyUp('ctrl')  
-            time.sleep(random.uniform(2.5, 3.0))  
+
+            for i in range(5):
+                pyautogui.scroll(-1300)  
 
             start_x, start_y = 700, 150  
             end_x, end_y = 0, 700       
