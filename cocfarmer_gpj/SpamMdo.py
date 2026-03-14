@@ -13,14 +13,20 @@ def main():
     farmer.dezoom_bottom()
 
     farmer.switch_mdo()
+
+
     time.sleep(random.uniform(3, 3.2))
 
 
-    for i in range(100):
+    farmer.dezoom_bottom_mdo_elixir_process()
+
+
+
+    for i in range(500):
         time.sleep(random.uniform(4, 4.5))
         farmer.attack_mdo()
 
-        time.sleep(random.uniform(120, 124))
+        farmer.check_and_click_pixel_mdo_second_attack()
 
         farmer.dezoom_mdo()
         time.sleep(random.uniform(3, 3.2))

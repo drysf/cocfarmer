@@ -87,7 +87,7 @@ class Utils:
             while True:
                 x = 678
                 y = 679
-                target_rgb = (108, 187, 31)
+                target_rgb = (112, 187, 29)
                 current_color = pyautogui.pixel(x, y)
                 
                 if current_color == target_rgb:
@@ -313,9 +313,6 @@ class Utils:
 
         print("Aucun pixel trouvé avec cette couleur.")
         return False  # Aucun pixel trouvé
-
-        print("Aucun pixel trouvé avec cette couleur")
-        return False  # Aucun pixel trouvé avec cette couleur
 
     def couleur_proche(self, couleur1, couleur2, tolerance=1):
         """
@@ -629,7 +626,28 @@ class Utils:
             while True:
                 x = 682
                 y = 662
-                target_rgb = (139, 212, 58)
+                target_rgb = (136, 212, 54)
+                current_color = pyautogui.pixel(x, y)
+                
+                if current_color == target_rgb:
+                    return True
+                
+                print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
+                time.sleep(5)
+        except KeyboardInterrupt:
+            print("Interruption de la fonction.")
+            return False
+        
+    def check_and_click_pixel_mdo_second_attack(self):
+        """
+        Vérifie si le pixel aux coordonnées (x, y) correspond à target_rgb.
+        Si oui, clique dessus et retourne True. Répète toutes les 5 secondes.
+        """
+        try:
+            while True:
+                x = 880
+                y = 663
+                target_rgb = (198, 73, 255)
                 current_color = pyautogui.pixel(x, y)
                 
                 if current_color == target_rgb:
@@ -656,8 +674,55 @@ class Utils:
 
             pyautogui.moveTo(start_x, start_y)  
             pyautogui.mouseDown()             
-            time.sleep(0.2)  
             pyautogui.dragTo(end_x, end_y, duration=0.5)  
             pyautogui.mouseUp()                 
+        except Exception as e:
+            print(f"Erreur lors de l'exécution de la fonction dezoom : {e}")
+
+    def get_elixir_mdo(self):
+
+        pass
+
+
+
+    def dezoom_bottom_mdo_elixir_process(self):
+        """
+        Dézoome pour avoir une vue complète du village, puis effectue un drag and drop vers le bas.
+        """
+        try:
+            pyautogui.click(13, 345)
+            time.sleep(1)  
+            pyautogui.keyDown('ctrl')
+            time.sleep(1.5) 
+            pyautogui.scroll(-500)  
+            pyautogui.keyUp('ctrl')  
+            time.sleep(3)  
+
+            start_x, start_y = 800, 800  
+            end_x, end_y = 10, 10       
+
+            pyautogui.moveTo(start_x, start_y)  
+            time.sleep(0.2)  
+            pyautogui.mouseDown()             
+            time.sleep(0.2)  
+            pyautogui.dragTo(end_x, end_y, duration=0.5)  
+            time.sleep(0.2)  
+            pyautogui.mouseUp()    
+
+
+            start_x, start_y = 10, 10  
+            end_x, end_y = 10, 800       
+
+
+            pyautogui.moveTo(start_x, start_y)  
+            time.sleep(0.2)  
+            pyautogui.mouseDown()             
+            time.sleep(0.2)  
+            pyautogui.dragTo(end_x, end_y, duration=0.5)  
+            time.sleep(0.2)  
+            pyautogui.mouseUp()       
+
+            
+                 
         except Exception as e:
             print(f"Erreur lors de l'exécution de la fonction dezoom : {e}")

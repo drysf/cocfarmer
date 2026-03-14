@@ -3,11 +3,17 @@ import pyautogui
 import random
 import time
 import json
-import build
+import builder
+import conf 
 
+niveau_rempart_str = f"rempart{conf.niveau_rempart}"
+if hasattr(builder, niveau_rempart_str):
+    rempart_data = getattr(builder, niveau_rempart_str)
+else:
+    raise ValueError(f"Le niveau de rempart '{conf.niveau_rempart}' n'est pas defini dans builder.py")
 
-amount = build.rempart14["cost"]
-rgb = build.rempart14["rgb"]
+amount = conf.seuil_upgrade_rempart
+rgb = rempart_data["rgb"]
 
 
 
