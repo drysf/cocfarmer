@@ -6,16 +6,11 @@ import json
 import builder
 import conf 
 
-niveau_rempart_str = f"rempart{conf.niveau_rempart}"
-if hasattr(builder, niveau_rempart_str):
-    rempart_data = getattr(builder, niveau_rempart_str)
-else:
-    raise ValueError(f"Le niveau de rempart '{conf.niveau_rempart}' n'est pas defini dans builder.py")
 
 amount = conf.seuil_upgrade_rempart
-rgb = rempart_data["rgb"]
+rgb = builder.rempart.get(str(conf.niveau_rempart))
 
-
+print(rgb)
 
 def main():
     farmer = Utils.Utils()
