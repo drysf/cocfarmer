@@ -1,4 +1,5 @@
 from PIL import Image
+import ctypes
 import json
 import random
 import time
@@ -17,8 +18,97 @@ class Utils:
 
     def __init__(self):
         self.reader = easyocr.Reader(['en'])
+        # Forcer la résolution à 1366x768 et la mise à l'échelle à 100% au lancement
+        self._set_resolution(1366, 768)
+        self._set_scale(100)
 
-  
+
+    def _set_resolution(self, width, height):
+        """
+        Change la résolution de l'écran principal via l'API Windows.
+        """
+        import ctypes
+        import ctypes.wintypes
+
+        class DEVMODEW(ctypes.Structure):
+            _fields_ = [
+                ("dmDeviceName",     ctypes.c_wchar * 32),
+                ("dmSpecVersion",    ctypes.wintypes.WORD),
+                ("dmDriverVersion",  ctypes.wintypes.WORD),
+                ("dmSize",           ctypes.wintypes.WORD),
+                ("dmDriverExtra",    ctypes.wintypes.WORD),
+                ("dmFields",         ctypes.wintypes.DWORD),
+                ("dmPositionX",      ctypes.c_long),
+                ("dmPositionY",      ctypes.c_long),
+                ("dmDisplayOrientation", ctypes.wintypes.DWORD),
+                ("dmDisplayFixedOutput",  ctypes.wintypes.DWORD),
+                ("dmColor",          ctypes.c_short),
+                ("dmDuplex",         ctypes.c_short),
+                ("dmYResolution",    ctypes.c_short),
+                ("dmTTOption",       ctypes.c_short),
+                ("dmCollate",        ctypes.c_short),
+                ("dmFormName",       ctypes.c_wchar * 32),
+                ("dmLogPixels",      ctypes.wintypes.WORD),
+                ("dmBitsPerPel",     ctypes.wintypes.DWORD),
+                ("dmPelsWidth",      ctypes.wintypes.DWORD),
+                ("dmPelsHeight",     ctypes.wintypes.DWORD),
+                ("dmDisplayFlags",   ctypes.wintypes.DWORD),
+                ("dmDisplayFrequency", ctypes.wintypes.DWORD),
+                ("dmICMMethod",      ctypes.wintypes.DWORD),
+                ("dmICMIntent",      ctypes.wintypes.DWORD),
+                ("dmMediaType",      ctypes.wintypes.DWORD),
+                ("dmDitherType",     ctypes.wintypes.DWORD),
+                ("dmReserved1",      ctypes.wintypes.DWORD),
+                ("dmReserved2",      ctypes.wintypes.DWORD),
+                ("dmPanningWidth",   ctypes.wintypes.DWORD),
+                ("dmPanningHeight",  ctypes.wintypes.DWORD),
+            ]
+
+        dm = DEVMODEW()
+        dm.dmSize = ctypes.sizeof(DEVMODEW)
+        dm.dmPelsWidth = width
+        dm.dmPelsHeight = height
+        dm.dmBitsPerPel = 32
+        dm.dmFields = 0x00080000 | 0x00100000 | 0x00040000  # DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL
+
+        result = ctypes.windll.user32.ChangeDisplaySettingsW(ctypes.byref(dm), 0)
+        if result == 0:
+            print(f"Résolution définie à {width}x{height}")
+        else:
+            print(f"Impossible de changer la résolution (code {result})")
+
+
+    def _set_scale(self, percent):
+        """
+        Met la mise à l'échelle DPI de l'écran à la valeur donnée (ex: 100 pour 100%).
+        Modifie le registre Windows et diffuse un message WM_SETTINGCHANGE.
+        """
+        import ctypes
+        import winreg
+
+        # 100% = 96 DPI, 125% = 120, 150% = 144, etc.
+        dpi = int(96 * percent / 100)
+
+        try:
+            key = winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Control Panel\Desktop",
+                0, winreg.KEY_SET_VALUE
+            )
+            winreg.SetValueEx(key, "LogPixels", 0, winreg.REG_DWORD, dpi)
+            winreg.SetValueEx(key, "Win8DpiScaling", 0, winreg.REG_DWORD, 1)
+            winreg.CloseKey(key)
+
+            # Diffuser le changement pour que Windows l'applique
+            HWND_BROADCAST = 0xFFFF
+            WM_SETTINGCHANGE = 0x001A
+            ctypes.windll.user32.SendMessageTimeoutW(
+                HWND_BROADCAST, WM_SETTINGCHANGE, 0, "Environment",
+                0x0002, 5000, None
+            )
+            print(f"Mise à l'échelle définie à {percent}% ({dpi} DPI)")
+        except Exception as e:
+            print(f"Impossible de changer la mise à l'échelle : {e}")
 
 
     def takePictureAttack(self):
@@ -92,7 +182,7 @@ class Utils:
                 target2 = (108, 187, 31)
                 current_color = pyautogui.pixel(x, y)
                 
-                if current_color == target_rgb or current_color == target2:
+                if self.couleur_proche(current_color, target_rgb, tolerance=10):
                     return True
                 
                 print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
@@ -628,10 +718,10 @@ class Utils:
             while True:
                 x = 682
                 y = 662
-                target_rgb = (136, 212, 54)
+                target_rgb = (119, 186, 47)
                 current_color = pyautogui.pixel(x, y)
                 
-                if current_color == target_rgb:
+                if self.couleur_proche(current_color, target_rgb, tolerance=10):
                     return True
                 
                 print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
@@ -649,10 +739,10 @@ class Utils:
             while True:
                 x = 880
                 y = 663
-                target_rgb = (198, 73, 255)
+                target_rgb = (174, 61, 224)
                 current_color = pyautogui.pixel(x, y)
                 
-                if current_color == target_rgb:
+                if self.couleur_proche(current_color, target_rgb, tolerance=10):
                     return True
                 
                 print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
@@ -683,7 +773,33 @@ class Utils:
 
     def get_elixir_mdo(self):
 
-        pass
+        pyautogui.click(13, 345)
+        time.sleep(1)  
+        pyautogui.keyDown('ctrl')
+        time.sleep(1.5) 
+        pyautogui.scroll(-1000)  
+        pyautogui.keyUp('ctrl')  
+        time.sleep(3)  
+        
+        start_x, start_y = 600, 1000  
+        end_x, end_y = 150, 150       
+
+        pyautogui.moveTo(start_x, start_y)  
+        pyautogui.mouseDown()             
+        pyautogui.dragTo(end_x, end_y, duration=2)  
+        time.sleep(0.2)
+        pyautogui.mouseUp()  
+
+        time.sleep(2)
+
+        start_x, start_y = 1000, 150  
+        end_x, end_y = 400, 600       
+
+        pyautogui.moveTo(start_x, start_y)  
+        pyautogui.mouseDown()             
+        pyautogui.dragTo(end_x, end_y, duration=2)  
+        time.sleep(0.2)
+        pyautogui.mouseUp()  
 
 
 
