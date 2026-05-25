@@ -116,7 +116,7 @@ Write-Host "Waiting..."
 Start-Sleep -Seconds 60
 
 Set-Location "$PSScriptRoot\cocfarmer_gpj"
-python SpamGmaes.py
+python SpamGamaes.py
 
 # Restore original resolution
 Write-Host "Restoring original resolution..."

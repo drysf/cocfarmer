@@ -88,9 +88,11 @@ class Utils:
                 x = 678
                 y = 679
                 target_rgb = (112, 187, 29)
+
+                target2 = (108, 187, 31)
                 current_color = pyautogui.pixel(x, y)
                 
-                if current_color == target_rgb:
+                if current_color == target_rgb or current_color == target2:
                     return True
                 
                 print(f"Pixel ({x}, {y}) couleur actuelle {current_color}, attente...")
